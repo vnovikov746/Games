@@ -7,20 +7,18 @@ import java.awt.event.KeyEvent;
 
 import TileMap.Background;
 
-public class MenuState extends GameState
+public class HelpState extends GameState
 {
 	private Background bg;
 	
-	private int currentChoice = 0;
-	private String[] options = {"Start", "Help", "Quit"};
+	private String option = "Return";
 	
 	private Color titleColor;
 	private Font titleFont;
 	
-	private Color fontColor;
 	private Font font;
 	
-	public MenuState(GameStateManager gsm)
+	public HelpState(GameStateManager gsm)
 	{
 		this.gsm = gsm;
 		
@@ -32,7 +30,6 @@ public class MenuState extends GameState
 			this.titleColor = new Color(253, 37, 178);
 			this.titleFont = new Font("Century Gothic", Font.BOLD, 32);
 			
-			this.fontColor = new Color(87, 10, 254);
 			this.font = new Font("Arial", Font.BOLD, 20);
 		}
 		catch(Exception e)
@@ -66,34 +63,15 @@ public class MenuState extends GameState
 		
 		// draw menu options
 		g.setFont(this.font);
-		for(int i = 0; i < this.options.length; i++)
-		{
-			if(i == this.currentChoice)
-			{
-				g.setColor(this.titleColor);
-			}
-			else
-			{
-				g.setColor(this.fontColor);
-			}
-			g.drawString(this.options[i], 320, 140 + i * 30);
-		}
+		
+		g.setColor(this.titleColor);
+		
+		g.drawString(this.option, 320, 140 + 30);
 	}
 	
 	private void select()
 	{
-		if(this.currentChoice == 0)
-		{
-			this.gsm.setState(GameStateManager.LEVEL1STATE, 3, 5, 5, 0);
-		}
-		if(this.currentChoice == 1)
-		{
-			this.gsm.setState(GameStateManager.HELPSTATE, 0, 0, 0, 0);
-		}
-		if(this.currentChoice == 2)
-		{
-			System.exit(0);
-		}
+		this.gsm.setState(GameStateManager.MENUSTATE, 0, 0, 0, 0);
 	}
 	
 	@Override
@@ -102,22 +80,6 @@ public class MenuState extends GameState
 		if(k == KeyEvent.VK_ENTER)
 		{
 			this.select();
-		}
-		if(k == KeyEvent.VK_UP)
-		{
-			this.currentChoice--;
-			if(this.currentChoice == -1)
-			{
-				this.currentChoice = this.options.length - 1;
-			}
-		}
-		if(k == KeyEvent.VK_DOWN)
-		{
-			this.currentChoice++;
-			if(this.currentChoice == this.options.length)
-			{
-				this.currentChoice = 0;
-			}
 		}
 	}
 	

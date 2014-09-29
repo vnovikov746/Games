@@ -4,10 +4,8 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Random;
 
 import Audio.AudioPlayer;
-import Entity.Cthulhu;
 import Entity.Enemy;
 import Entity.Explosion;
 import Entity.HUD;
@@ -20,11 +18,8 @@ import TileMap.Background;
 import TileMap.Tile;
 import TileMap.TileMap;
 
-public class Level1State extends GameState
+public class Level3State extends GameState
 {
-	// TODO MOVE TO 3 LEVEL
-	private Cthulhu cthulu;
-	
 	private TileMap tileMap;
 	private Background bg;
 	
@@ -39,7 +34,7 @@ public class Level1State extends GameState
 	
 	private AudioPlayer bgMusic;
 	
-	public Level1State(GameStateManager gsm, int health, int blades, int avril,
+	public Level3State(GameStateManager gsm, int health, int blades, int avril,
 			int score)
 	{
 		this.gsm = gsm;
@@ -67,10 +62,6 @@ public class Level1State extends GameState
 		this.vortex = new Vortex(this.tileMap);
 		this.vortex.setPosition(4750, 260);
 		
-		// TODO MOVE TO 3 LEVEL
-		this.cthulu = new Cthulhu(this.tileMap);
-		this.cthulu.setPosition(4680, 175);
-		
 		this.populateEnemies();
 		
 		this.explosions = new ArrayList<Explosion>();
@@ -95,48 +86,47 @@ public class Level1State extends GameState
 		}
 		for(int i = 0; i < points.length; i++)
 		{
-			if(i < points.length / 2)
-			{
-				c = new Conformist(this.tileMap);
-				c.setPosition(points[i].x, points[i].y);
-				if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) != Tile.BLOCKED)
-				{
-					this.enemies.add(c);
-				}
-			}
+			// if(i < points.length / 2)
+			// {
+			// c = new Conformist(this.tileMap);
+			// c.setPosition(points[i].x, points[i].y);
+			// if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) !=
+			// Tile.BLOCKED)
+			// {
+			// this.enemies.add(c);
+			// }
+			// }
+			//
+			// else
+			// {
+			// Random ran = new Random();
+			// if(Math.abs(ran.nextInt()) % 2 == 0)
+			// {
+			// c = new Conformist(this.tileMap);
+			// c.setPosition(points[i].x, points[i].y);
+			// if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) !=
+			// Tile.BLOCKED)
+			// {
+			// this.enemies.add(c);
+			// }
+			// }
 			
-			else
+			// else
+			// {
+			s = new Skeleton(this.tileMap);
+			s.setPosition(points[i].x, points[i].y);
+			if(this.tileMap.getType(s.gety() / 30, s.getx() / 30) != Tile.BLOCKED)
 			{
-				Random ran = new Random();
-				if(Math.abs(ran.nextInt()) % 2 == 0)
-				{
-					c = new Conformist(this.tileMap);
-					c.setPosition(points[i].x, points[i].y);
-					if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) != Tile.BLOCKED)
-					{
-						this.enemies.add(c);
-					}
-				}
-				
-				else
-				{
-					s = new Skeleton(this.tileMap);
-					s.setPosition(points[i].x, points[i].y);
-					if(this.tileMap.getType(s.gety() / 30, s.getx() / 30) != Tile.BLOCKED)
-					{
-						this.enemies.add(s);
-					}
-				}
+				this.enemies.add(s);
 			}
+			// }
+			// }
 		}
 	}
 	
 	@Override
 	public void update()
 	{
-		// TODO MOVE TO 3 LEVEL
-		this.cthulu.update();
-		
 		// update player
 		this.player.update(this.enemies);
 		this.tileMap.setPosition(GamePanel.WIDTH / 2 - this.player.getx(),
@@ -150,8 +140,8 @@ public class Level1State extends GameState
 			int avril = this.player.getNumOfAvril();
 			int score = this.player.getScore();
 			
-			this.gsm.setState(GameStateManager.LEVEL2STATE, health, blades,
-					avril, score);
+			this.gsm.setState(GameStateManager.WINSTATE, health, blades, avril,
+					score);
 		}
 		
 		// check players death
@@ -180,6 +170,7 @@ public class Level1State extends GameState
 			{
 				this.player.setDead(true);
 			}
+			
 			else
 			{
 				this.init(health - 1, blades, avril, score);
@@ -231,9 +222,6 @@ public class Level1State extends GameState
 		
 		// draw player
 		this.player.draw(g);
-		
-		// TODO MOVE TO 3 LEVEL
-		this.cthulu.draw(g);
 		
 		// draw vortex
 		this.vortex.draw(g);

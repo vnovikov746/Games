@@ -9,16 +9,16 @@ import Entity.Animation;
 import Entity.Enemy;
 import TileMap.TileMap;
 
-public class Conformist extends Enemy
+public class Skeleton extends Enemy
 {
 	private BufferedImage[] sprites;
 	
-	public Conformist(TileMap tm)
+	public Skeleton(TileMap tm)
 	{
 		super(tm);
 		
-		this.moveSpeed = 0.5;
-		this.maxSpeed = 0.5;
+		this.moveSpeed = 1.0;
+		this.maxSpeed = 1.0;
 		this.fallSpeed = 0.2;
 		this.maxFallSpeed = 10.0;
 		
@@ -27,16 +27,16 @@ public class Conformist extends Enemy
 		this.cwidth = 20;
 		this.cheight = 20;
 		
-		this.health = this.maxHealth = 1;
+		this.health = this.maxHealth = 2;
 		this.damage = 1;
-		this.jumpOnDamage = 2;
+		this.jumpOnDamage = 0;
 		
 		// load sprites
 		try
 		{
 			
 			BufferedImage spritesheet = ImageIO.read(this.getClass()
-					.getResourceAsStream("/Sprites/Enemies/confirmist.gif"));
+					.getResourceAsStream("/Sprites/Enemies/Skeleton.gif"));
 			
 			this.sprites = new BufferedImage[4];
 			for(int i = 0; i < this.sprites.length; i++)

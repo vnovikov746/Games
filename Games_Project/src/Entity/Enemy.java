@@ -1,5 +1,6 @@
 package Entity;
 
+import Main.GamePanel;
 import TileMap.TileMap;
 
 public class Enemy extends MapObject
@@ -8,6 +9,7 @@ public class Enemy extends MapObject
 	protected int maxHealth;
 	protected boolean dead;
 	protected int damage;
+	protected int jumpOnDamage;
 	
 	protected boolean flinching;
 	protected long flinchingTimer;
@@ -25,6 +27,11 @@ public class Enemy extends MapObject
 	public int getDamage()
 	{
 		return this.damage;
+	}
+	
+	public int getJumpOnDamage()
+	{
+		return this.jumpOnDamage;
 	}
 	
 	public void hit(int damage)
@@ -53,7 +60,10 @@ public class Enemy extends MapObject
 	}
 	
 	public void update()
-	{	
-		
+	{
+		if(this.gety() >= GamePanel.HEIGHT - (this.cheight * 2))
+		{
+			this.dead = true;
+		}
 	}
 }
