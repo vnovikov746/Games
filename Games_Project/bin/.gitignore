@@ -1,5 +1,18 @@
+<<<<<<< HEAD
+=======
+/Audio
+/Backgrounds
+>>>>>>> origin/master
 /Entity
 /GameState
 /Maps
+<<<<<<< HEAD
 /Sprites
 /Backgrounds
+=======
+/Music
+/SFX
+/Sprites
+/TileMap
+/Tilesets
+>>>>>>> origin/master
