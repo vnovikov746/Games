@@ -17,8 +17,8 @@ public class Skeleton extends Enemy
 	{
 		super(tm);
 		
-		this.moveSpeed = 1.0;
-		this.maxSpeed = 1.0;
+		this.moveSpeed = 1;
+		this.maxSpeed = 1;
 		this.fallSpeed = 0.2;
 		this.maxFallSpeed = 10.0;
 		
@@ -36,7 +36,7 @@ public class Skeleton extends Enemy
 		{
 			
 			BufferedImage spritesheet = ImageIO.read(this.getClass()
-					.getResourceAsStream("/Sprites/Enemies/Skeleton.gif"));
+					.getResourceAsStream("/Sprites/Enemies/skeleton.gif"));
 			
 			this.sprites = new BufferedImage[4];
 			for(int i = 0; i < this.sprites.length; i++)

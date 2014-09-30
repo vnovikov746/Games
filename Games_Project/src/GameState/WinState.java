@@ -5,14 +5,11 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
-import Audio.AudioPlayer;
 import TileMap.Background;
 
 public class WinState extends GameState
 {
 	private Background bg;
-	
-	private AudioPlayer bgMusic;
 	
 	private String option = "PRESS ENTER TO RETURN TO MENU";
 	
@@ -39,8 +36,6 @@ public class WinState extends GameState
 		{
 			e.printStackTrace();
 		}
-		this.bgMusic = new AudioPlayer("/Music/Requiem.mp3");
-		this.bgMusic.loop();
 	}
 	
 	@Override
@@ -78,7 +73,6 @@ public class WinState extends GameState
 	
 	private void select()
 	{
-		this.bgMusic.stop();
 		this.gsm.setState(GameStateManager.MENUSTATE, 0, 0, 0, 0);
 	}
 	

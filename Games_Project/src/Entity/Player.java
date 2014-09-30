@@ -99,7 +99,7 @@ public class Player extends MapObject
 							"/Sprites/Player/emoplayersprites.gif"));
 			
 			this.sprites = new ArrayList<BufferedImage[]>();
-			for(int i = 0; i < 6; i++)
+			for(int i = 0; i < 5; i++)
 			{
 				BufferedImage[] bi = new BufferedImage[this.numFrames[i]];
 				
