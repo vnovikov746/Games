@@ -11,7 +11,7 @@ public class HelpState extends GameState
 {
 	private Background bg;
 	
-	private String option = "Return";
+	private String option = "Press ENTER Return";
 	
 	private Color titleColor;
 	private Font titleFont;
@@ -24,8 +24,8 @@ public class HelpState extends GameState
 		
 		try
 		{
-			this.bg = new Background("/Backgrounds/menu_background_pink.gif", 1);
-			this.bg.setVector(-0.1, 0);
+			this.bg = new Background("/Backgrounds/help_background.gif", 1);
+			this.bg.setVector(0, 0);
 			
 			this.titleColor = new Color(253, 37, 178);
 			this.titleFont = new Font("Century Gothic", Font.BOLD, 32);
@@ -59,14 +59,14 @@ public class HelpState extends GameState
 		// draw title
 		g.setColor(this.titleColor);
 		g.setFont(this.titleFont);
-		g.drawString("Emo Kid", 280, 100);
+		g.drawString("", 280, 100);
 		
 		// draw menu options
 		g.setFont(this.font);
 		
 		g.setColor(this.titleColor);
 		
-		g.drawString(this.option, 320, 140 + 30);
+		g.drawString(this.option, 320, 260);
 	}
 	
 	private void select()

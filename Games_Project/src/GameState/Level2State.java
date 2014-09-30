@@ -11,7 +11,6 @@ import Entity.Explosion;
 import Entity.HUD;
 import Entity.Player;
 import Entity.Vortex;
-import Entity.Enemies.Conformist;
 import Entity.Enemies.Skeleton;
 import Main.GamePanel;
 import TileMap.Background;
@@ -20,6 +19,8 @@ import TileMap.TileMap;
 
 public class Level2State extends GameState
 {
+	private final int NUMOFENEMIES = 10;
+	
 	private TileMap tileMap;
 	private Background bg;
 	
@@ -46,7 +47,7 @@ public class Level2State extends GameState
 	{
 		this.tileMap = new TileMap(30);
 		this.tileMap.loadTiles("/Tilesets/tileset1.gif");
-		this.tileMap.loadMap("/Maps/level1.map");
+		this.tileMap.loadMap("/Maps/level2.map");
 		this.tileMap.setPosition(0, 0);
 		this.tileMap.setTween(1);
 		
@@ -68,59 +69,28 @@ public class Level2State extends GameState
 		
 		this.hud = new HUD(this.player);
 		
-		// this.bgMusic = new AudioPlayer("/Music/cows.mp3");
-		// this.bgMusic.loop();
+		this.bgMusic = new AudioPlayer("/Music/MEOW.mp3");
+		this.bgMusic.loop();
 	}
 	
 	private void populateEnemies()
 	{
 		this.enemies = new ArrayList<Enemy>();
 		
-		Conformist c;
 		Skeleton s;
-		int numOfEnemies = (4500 / 60);
-		Point[] points = new Point[numOfEnemies];
-		for(int i = 0; i < numOfEnemies; i++)
+		Point[] points = new Point[this.NUMOFENEMIES];
+		for(int i = 0; i < this.NUMOFENEMIES; i++)
 		{
-			points[i] = new Point(200 + (i * 60), 260);
+			points[i] = new Point(4100 + (i * 60), 260);
 		}
 		for(int i = 0; i < points.length; i++)
 		{
-			// if(i < points.length / 2)
-			// {
-			// c = new Conformist(this.tileMap);
-			// c.setPosition(points[i].x, points[i].y);
-			// if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) !=
-			// Tile.BLOCKED)
-			// {
-			// this.enemies.add(c);
-			// }
-			// }
-			//
-			// else
-			// {
-			// Random ran = new Random();
-			// if(Math.abs(ran.nextInt()) % 2 == 0)
-			// {
-			// c = new Conformist(this.tileMap);
-			// c.setPosition(points[i].x, points[i].y);
-			// if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) !=
-			// Tile.BLOCKED)
-			// {
-			// this.enemies.add(c);
-			// }
-			// }
-			
-			// else
-			// {
 			s = new Skeleton(this.tileMap);
 			s.setPosition(points[i].x, points[i].y);
 			if(this.tileMap.getType(s.gety() / 30, s.getx() / 30) != Tile.BLOCKED)
 			{
 				this.enemies.add(s);
 			}
-			// }
-			// }
 		}
 	}
 	
@@ -140,6 +110,7 @@ public class Level2State extends GameState
 			int avril = this.player.getNumOfAvril();
 			int score = this.player.getScore();
 			
+			this.bgMusic.stop();
 			this.gsm.setState(GameStateManager.LEVEL3STATE, health, blades,
 					avril, score);
 		}
@@ -155,6 +126,7 @@ public class Level2State extends GameState
 			{
 				e.printStackTrace();
 			}
+			this.bgMusic.stop();
 			this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
 		}
 		
@@ -169,10 +141,13 @@ public class Level2State extends GameState
 			if(health - 1 == 0)
 			{
 				this.player.setDead(true);
+				this.bgMusic.stop();
+				this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
 			}
 			
 			else
 			{
+				this.bgMusic.stop();
 				this.init(health - 1, blades, avril, score);
 			}
 		}

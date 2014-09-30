@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Random;
 
 import Audio.AudioPlayer;
-import Entity.Cthulhu;
 import Entity.Enemy;
 import Entity.Explosion;
 import Entity.HUD;
@@ -22,8 +21,7 @@ import TileMap.TileMap;
 
 public class Level1State extends GameState
 {
-	// TODO MOVE TO 3 LEVEL
-	private Cthulhu cthulu;
+	private final int NUMOFENEMIES = (4500 / 60);
 	
 	private TileMap tileMap;
 	private Background bg;
@@ -67,18 +65,14 @@ public class Level1State extends GameState
 		this.vortex = new Vortex(this.tileMap);
 		this.vortex.setPosition(4750, 260);
 		
-		// TODO MOVE TO 3 LEVEL
-		this.cthulu = new Cthulhu(this.tileMap);
-		this.cthulu.setPosition(4680, 175);
-		
 		this.populateEnemies();
 		
 		this.explosions = new ArrayList<Explosion>();
 		
 		this.hud = new HUD(this.player);
 		
-		// this.bgMusic = new AudioPlayer("/Music/cows.mp3");
-		// this.bgMusic.loop();
+		this.bgMusic = new AudioPlayer("/Music/cows.mp3");
+		this.bgMusic.loop();
 	}
 	
 	private void populateEnemies()
@@ -87,9 +81,8 @@ public class Level1State extends GameState
 		
 		Conformist c;
 		Skeleton s;
-		int numOfEnemies = (4500 / 60);
-		Point[] points = new Point[numOfEnemies];
-		for(int i = 0; i < numOfEnemies; i++)
+		Point[] points = new Point[this.NUMOFENEMIES];
+		for(int i = 0; i < this.NUMOFENEMIES; i++)
 		{
 			points[i] = new Point(200 + (i * 60), 260);
 		}
@@ -134,9 +127,6 @@ public class Level1State extends GameState
 	@Override
 	public void update()
 	{
-		// TODO MOVE TO 3 LEVEL
-		this.cthulu.update();
-		
 		// update player
 		this.player.update(this.enemies);
 		this.tileMap.setPosition(GamePanel.WIDTH / 2 - this.player.getx(),
@@ -150,6 +140,7 @@ public class Level1State extends GameState
 			int avril = this.player.getNumOfAvril();
 			int score = this.player.getScore();
 			
+			this.bgMusic.stop();
 			this.gsm.setState(GameStateManager.LEVEL2STATE, health, blades,
 					avril, score);
 		}
@@ -165,6 +156,7 @@ public class Level1State extends GameState
 			{
 				e.printStackTrace();
 			}
+			this.bgMusic.stop();
 			this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
 		}
 		
@@ -179,9 +171,12 @@ public class Level1State extends GameState
 			if(health - 1 == 0)
 			{
 				this.player.setDead(true);
+				this.bgMusic.stop();
+				this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
 			}
 			else
 			{
+				this.bgMusic.stop();
 				this.init(health - 1, blades, avril, score);
 			}
 		}
@@ -231,9 +226,6 @@ public class Level1State extends GameState
 		
 		// draw player
 		this.player.draw(g);
-		
-		// TODO MOVE TO 3 LEVEL
-		this.cthulu.draw(g);
 		
 		// draw vortex
 		this.vortex.draw(g);

@@ -1,18 +1,12 @@
-<<<<<<< HEAD
-=======
 /Audio
 /Backgrounds
->>>>>>> origin/master
 /Entity
 /GameState
+/HUD
+/Main
 /Maps
-<<<<<<< HEAD
-/Sprites
-/Backgrounds
-=======
-/Music
-/SFX
-/Sprites
 /TileMap
-/Tilesets
->>>>>>> origin/master
+/ChtuluDialog
+/ChtulhuDialog
+/CthulhuDialog
+/Music

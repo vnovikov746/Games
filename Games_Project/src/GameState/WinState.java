@@ -5,11 +5,14 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.event.KeyEvent;
 
+import Audio.AudioPlayer;
 import TileMap.Background;
 
 public class WinState extends GameState
 {
 	private Background bg;
+	
+	private AudioPlayer bgMusic;
 	
 	private String option = "PRESS ENTER TO RETURN TO MENU";
 	
@@ -36,6 +39,8 @@ public class WinState extends GameState
 		{
 			e.printStackTrace();
 		}
+		this.bgMusic = new AudioPlayer("/Music/Requiem.mp3");
+		this.bgMusic.loop();
 	}
 	
 	@Override
@@ -59,18 +64,21 @@ public class WinState extends GameState
 		// draw title
 		g.setColor(this.titleColor);
 		g.setFont(this.titleFont);
-		g.drawString("YOU WIN BUT HEI, YOU ALSO DIED :-(", 10, 100);
+		g.drawString("Cthulhu took your soul!", 140, 100);
+		g.drawString("but don't worry in EMO KID 2", 100, 140);
+		g.drawString("you will meet again in his dark kingdom", 10, 180);
 		
 		// draw menu options
 		g.setFont(this.font);
 		
 		g.setColor(this.titleColor);
 		
-		g.drawString(this.option, 180, 170);
+		g.drawString(this.option, 130, 260);
 	}
 	
 	private void select()
 	{
+		this.bgMusic.stop();
 		this.gsm.setState(GameStateManager.MENUSTATE, 0, 0, 0, 0);
 	}
 	

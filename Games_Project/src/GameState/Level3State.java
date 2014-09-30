@@ -6,13 +6,12 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import Audio.AudioPlayer;
+import Entity.Cthulhu;
 import Entity.Enemy;
 import Entity.Explosion;
 import Entity.HUD;
 import Entity.Player;
-import Entity.Vortex;
 import Entity.Enemies.Conformist;
-import Entity.Enemies.Skeleton;
 import Main.GamePanel;
 import TileMap.Background;
 import TileMap.Tile;
@@ -20,12 +19,25 @@ import TileMap.TileMap;
 
 public class Level3State extends GameState
 {
+	private final int NUMOFENEMIES = (4500 / 60);
+	
+	private Cthulhu cthulu;
+	
+	// map states
+	private final int MAP_A = 0;
+	private final int MAP_B = 1;
+	private final int MAP_C = 2;
+	private int mapState;
+	private int prevMapState;
+	
+	private Level3Helper levelHelper;
+	private Thread moveMapThread;
+	
 	private TileMap tileMap;
+	
 	private Background bg;
 	
 	private Player player;
-	
-	private Vortex vortex;
 	
 	private ArrayList<Enemy> enemies;
 	private ArrayList<Explosion> explosions;
@@ -46,11 +58,17 @@ public class Level3State extends GameState
 	{
 		this.tileMap = new TileMap(30);
 		this.tileMap.loadTiles("/Tilesets/tileset1.gif");
-		this.tileMap.loadMap("/Maps/level1.map");
+		this.tileMap.loadMap("/Maps/level3b.map");
 		this.tileMap.setPosition(0, 0);
 		this.tileMap.setTween(1);
 		
+		this.prevMapState = this.mapState = this.MAP_A;
+		
 		this.bg = new Background("/Backgrounds/Lava.gif", 0.1);
+		
+		this.levelHelper = new Level3Helper();
+		this.moveMapThread = new Thread(this.levelHelper);
+		this.moveMapThread.start();
 		
 		this.player = new Player(this.tileMap);
 		this.player.setPosition(100, 100);
@@ -59,8 +77,8 @@ public class Level3State extends GameState
 		this.player.setNumOfBlades(blades);
 		this.player.setScore(score);
 		
-		this.vortex = new Vortex(this.tileMap);
-		this.vortex.setPosition(4750, 260);
+		this.cthulu = new Cthulhu(this.tileMap);
+		this.cthulu.setPosition(4680, 175);
 		
 		this.populateEnemies();
 		
@@ -68,8 +86,8 @@ public class Level3State extends GameState
 		
 		this.hud = new HUD(this.player);
 		
-		// this.bgMusic = new AudioPlayer("/Music/cows.mp3");
-		// this.bgMusic.loop();
+		this.bgMusic = new AudioPlayer("/Music/chimpnology.mp3");
+		this.bgMusic.loop();
 	}
 	
 	private void populateEnemies()
@@ -77,72 +95,67 @@ public class Level3State extends GameState
 		this.enemies = new ArrayList<Enemy>();
 		
 		Conformist c;
-		Skeleton s;
-		int numOfEnemies = (4500 / 60);
-		Point[] points = new Point[numOfEnemies];
-		for(int i = 0; i < numOfEnemies; i++)
+		Point[] points = new Point[this.NUMOFENEMIES];
+		for(int i = 0; i < this.NUMOFENEMIES; i++)
 		{
-			points[i] = new Point(200 + (i * 60), 260);
+			points[i] = new Point(200 + (i * 60), 100);
 		}
 		for(int i = 0; i < points.length; i++)
 		{
-			// if(i < points.length / 2)
-			// {
-			// c = new Conformist(this.tileMap);
-			// c.setPosition(points[i].x, points[i].y);
-			// if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) !=
-			// Tile.BLOCKED)
-			// {
-			// this.enemies.add(c);
-			// }
-			// }
-			//
-			// else
-			// {
-			// Random ran = new Random();
-			// if(Math.abs(ran.nextInt()) % 2 == 0)
-			// {
-			// c = new Conformist(this.tileMap);
-			// c.setPosition(points[i].x, points[i].y);
-			// if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) !=
-			// Tile.BLOCKED)
-			// {
-			// this.enemies.add(c);
-			// }
-			// }
-			
-			// else
-			// {
-			s = new Skeleton(this.tileMap);
-			s.setPosition(points[i].x, points[i].y);
-			if(this.tileMap.getType(s.gety() / 30, s.getx() / 30) != Tile.BLOCKED)
+			c = new Conformist(this.tileMap);
+			c.setPosition(points[i].x, points[i].y);
+			if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) != Tile.BLOCKED)
 			{
-				this.enemies.add(s);
+				this.enemies.add(c);
 			}
-			// }
-			// }
 		}
 	}
 	
 	@Override
 	public void update()
 	{
+		// if got to cthulhu
+		if(this.player.getx() >= 4570)
+		{
+			this.player.setPosition(4570, 100);
+			this.bgMusic.stop();
+			this.gsm.setState(GameStateManager.CTHULHUDIALOG, 0, 0, 0, 0);
+		}
+		
+		// move map
+		if(this.levelHelper.getMoveMap())
+		{
+			if(this.mapState == this.MAP_A || this.mapState == this.MAP_C)
+			{
+				this.prevMapState = this.mapState;
+				this.tileMap.loadMap("/Maps/level3b.map");
+				this.mapState = this.MAP_B;
+			}
+			else
+			{
+				if(this.prevMapState == this.MAP_A)
+				{
+					this.prevMapState = this.mapState;
+					this.tileMap.loadMap("/Maps/level3c.map");
+					this.mapState = this.MAP_C;
+				}
+				else if(this.prevMapState == this.MAP_C)
+				{
+					this.prevMapState = this.mapState;
+					this.tileMap.loadMap("/Maps/level3a.map");
+					this.mapState = this.MAP_A;
+				}
+			}
+			this.levelHelper.setMoveMap(false);
+		}
+		
+		// update cthulhu
+		this.cthulu.update();
+		
 		// update player
 		this.player.update(this.enemies);
 		this.tileMap.setPosition(GamePanel.WIDTH / 2 - this.player.getx(),
 				GamePanel.HEIGHT / 2 - this.player.gety());
-		
-		// check player-vortex intersection (go to next level)
-		if(this.player.intersects(this.vortex))
-		{
-			int health = this.player.getHealth();
-			int blades = this.player.getNumOfBlades();
-			int avril = this.player.getNumOfAvril();
-			int score = this.player.getScore();
-			
-			this.gsm.setState(GameStateManager.WINSTATE, health, blades, avril,
-					score);
-		}
 		
 		// check players death
 		if(this.player.getDead())
@@ -155,6 +168,7 @@ public class Level3State extends GameState
 			{
 				e.printStackTrace();
 			}
+			this.bgMusic.stop();
 			this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
 		}
 		
@@ -169,10 +183,13 @@ public class Level3State extends GameState
 			if(health - 1 == 0)
 			{
 				this.player.setDead(true);
+				this.bgMusic.stop();
+				this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
 			}
 			
 			else
 			{
+				this.bgMusic.stop();
 				this.init(health - 1, blades, avril, score);
 			}
 		}
@@ -206,9 +223,6 @@ public class Level3State extends GameState
 				i--;
 			}
 		}
-		
-		// update vortex
-		this.vortex.update();
 	}
 	
 	@Override
@@ -217,14 +231,14 @@ public class Level3State extends GameState
 		// draw bg
 		this.bg.draw(g);
 		
-		// draw tilemap
+		// draw tileMap
 		this.tileMap.draw(g);
 		
 		// draw player
 		this.player.draw(g);
 		
-		// draw vortex
-		this.vortex.draw(g);
+		// draw cthulhu
+		this.cthulu.draw(g);
 		
 		// draw enemies
 		for(int i = 0; i < this.enemies.size(); i++)

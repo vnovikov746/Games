@@ -68,7 +68,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener
 	@Override
 	public void run()
 	{
-		
 		this.init();
 		
 		long start;

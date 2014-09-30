@@ -5,14 +5,15 @@ public class GameStateManager
 	private GameState[] gameStates;
 	private int currentState;
 	
-	public static final int NUMGAMESTATES = 7;
+	public static final int NUMGAMESTATES = 8;
 	public static final int MENUSTATE = 0;
 	public static final int LEVEL1STATE = 1;
 	public static final int LEVEL2STATE = 2;
 	public static final int LEVEL3STATE = 3;
 	public static final int HELPSTATE = 4;
 	public static final int DEADSTATE = 5;
-	public static final int WINSTATE = 6;
+	public static final int CTHULHUDIALOG = 6;
+	public static final int WINSTATE = 7;
 	
 	public GameStateManager()
 	{
@@ -51,6 +52,10 @@ public class GameStateManager
 		if(state == DEADSTATE)
 		{
 			this.gameStates[state] = new DeadState(this);
+		}
+		if(state == CTHULHUDIALOG)
+		{
+			this.gameStates[state] = new CthulhuDialog(this);
 		}
 		if(state == WINSTATE)
 		{
