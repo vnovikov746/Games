@@ -42,7 +42,7 @@ public class MenuState extends GameState
 	}
 	
 	@Override
-	public void init()
+	public void init(int health, int blades, int avril, int score)
 	{	
 		
 	}
@@ -84,11 +84,11 @@ public class MenuState extends GameState
 	{
 		if(this.currentChoice == 0)
 		{
-			this.gsm.setState(GameStateManager.LEVEL1STATE);
+			this.gsm.setState(GameStateManager.LEVEL1STATE, 3, 5, 5, 0);
 		}
 		if(this.currentChoice == 1)
 		{
-			// help
+			this.gsm.setState(GameStateManager.HELPSTATE, 0, 0, 0, 0);
 		}
 		if(this.currentChoice == 2)
 		{

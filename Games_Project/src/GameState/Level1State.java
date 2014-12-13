@@ -4,23 +4,31 @@ import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Random;
 
 import Audio.AudioPlayer;
 import Entity.Enemy;
 import Entity.Explosion;
 import Entity.HUD;
 import Entity.Player;
+import Entity.Vortex;
 import Entity.Enemies.Conformist;
+import Entity.Enemies.Skeleton;
 import Main.GamePanel;
 import TileMap.Background;
+import TileMap.Tile;
 import TileMap.TileMap;
 
 public class Level1State extends GameState
 {
+	private final int NUMOFENEMIES = (4500 / 60);
+	
 	private TileMap tileMap;
 	private Background bg;
 	
 	private Player player;
+	
+	private Vortex vortex;
 	
 	private ArrayList<Enemy> enemies;
 	private ArrayList<Explosion> explosions;
@@ -29,14 +37,15 @@ public class Level1State extends GameState
 	
 	private AudioPlayer bgMusic;
 	
-	public Level1State(GameStateManager gsm)
+	public Level1State(GameStateManager gsm, int health, int blades, int avril,
+			int score)
 	{
 		this.gsm = gsm;
-		this.init();
+		this.init(health, blades, avril, score);
 	}
 	
 	@Override
-	public void init()
+	public void init(int health, int blades, int avril, int score)
 	{
 		this.tileMap = new TileMap(30);
 		this.tileMap.loadTiles("/Tilesets/tileset1.gif");
@@ -48,8 +57,13 @@ public class Level1State extends GameState
 		
 		this.player = new Player(this.tileMap);
 		this.player.setPosition(100, 100);
-		this.player.setNumOfAvril(5);
-		this.player.setNumOfBlades(5);
+		this.player.setHealth(health);
+		this.player.setNumOfAvril(avril);
+		this.player.setNumOfBlades(blades);
+		this.player.setScore(score);
+		
+		this.vortex = new Vortex(this.tileMap);
+		this.vortex.setPosition(4750, 260);
 		
 		this.populateEnemies();
 		
@@ -66,14 +80,47 @@ public class Level1State extends GameState
 		this.enemies = new ArrayList<Enemy>();
 		
 		Conformist c;
-		Point[] points = new Point[] {new Point(200, 260), new Point(260, 260),
-				new Point(320, 260), new Point(380, 260), new Point(500, 260),
-				new Point(560, 260), new Point(620, 260), new Point(680, 260)};
+		Skeleton s;
+		Point[] points = new Point[this.NUMOFENEMIES];
+		for(int i = 0; i < this.NUMOFENEMIES; i++)
+		{
+			points[i] = new Point(200 + (i * 60), 260);
+		}
 		for(int i = 0; i < points.length; i++)
 		{
-			c = new Conformist(this.tileMap);
-			c.setPosition(points[i].x, points[i].y);
-			this.enemies.add(c);
+			if(i < points.length / 2)
+			{
+				c = new Conformist(this.tileMap);
+				c.setPosition(points[i].x, points[i].y);
+				if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) != Tile.BLOCKED)
+				{
+					this.enemies.add(c);
+				}
+			}
+			
+			else
+			{
+				Random ran = new Random();
+				if(Math.abs(ran.nextInt()) % 2 == 0)
+				{
+					c = new Conformist(this.tileMap);
+					c.setPosition(points[i].x, points[i].y);
+					if(this.tileMap.getType(c.gety() / 30, c.getx() / 30) != Tile.BLOCKED)
+					{
+						this.enemies.add(c);
+					}
+				}
+				
+				else
+				{
+					s = new Skeleton(this.tileMap);
+					s.setPosition(points[i].x, points[i].y);
+					if(this.tileMap.getType(s.gety() / 30, s.getx() / 30) != Tile.BLOCKED)
+					{
+						this.enemies.add(s);
+					}
+				}
+			}
 		}
 	}
 	
@@ -84,6 +131,19 @@ public class Level1State extends GameState
 		this.player.update(this.enemies);
 		this.tileMap.setPosition(GamePanel.WIDTH / 2 - this.player.getx(),
 				GamePanel.HEIGHT / 2 - this.player.gety());
+		
+		// check player-vortex intersection (go to next level)
+		if(this.player.intersects(this.vortex))
+		{
+			int health = this.player.getHealth();
+			int blades = this.player.getNumOfBlades();
+			int avril = this.player.getNumOfAvril();
+			int score = this.player.getScore();
+			
+			this.bgMusic.stop();
+			this.gsm.setState(GameStateManager.LEVEL2STATE, health, blades,
+					avril, score);
+		}
 		
 		// check players death
 		if(this.player.getDead())
@@ -96,8 +156,29 @@ public class Level1State extends GameState
 			{
 				e.printStackTrace();
 			}
-			this.gsm.setState(GameStateManager.MENUSTATE); // TODO CHANGE TO
-															// DEAD STATE
+			this.bgMusic.stop();
+			this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
+		}
+		
+		// check if fall into lava
+		if(this.player.getRestartLevel())
+		{
+			int health = this.player.getHealth();
+			int blades = this.player.getNumOfBlades();
+			int avril = this.player.getNumOfAvril();
+			int score = this.player.getScore();
+			
+			if(health - 1 == 0)
+			{
+				this.player.setDead(true);
+				this.bgMusic.stop();
+				this.gsm.setState(GameStateManager.DEADSTATE, 0, 0, 0, 0);
+			}
+			else
+			{
+				this.bgMusic.stop();
+				this.init(health - 1, blades, avril, score);
+			}
 		}
 		
 		// set background
@@ -129,6 +210,9 @@ public class Level1State extends GameState
 				i--;
 			}
 		}
+		
+		// update vortex
+		this.vortex.update();
 	}
 	
 	@Override
@@ -142,6 +226,9 @@ public class Level1State extends GameState
 		
 		// draw player
 		this.player.draw(g);
+		
+		// draw vortex
+		this.vortex.draw(g);
 		
 		// draw enemies
 		for(int i = 0; i < this.enemies.size(); i++)

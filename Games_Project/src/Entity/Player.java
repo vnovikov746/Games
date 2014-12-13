@@ -9,6 +9,7 @@ import javax.imageio.ImageIO;
 
 import Audio.AudioPlayer;
 import Entity.Weapons.Blade;
+import Main.GamePanel;
 import TileMap.TileMap;
 
 public class Player extends MapObject
@@ -21,6 +22,7 @@ public class Player extends MapObject
 	private int numOfAvril;
 	private int maxAvril;
 	private boolean dead;
+	private boolean restartLevel;
 	private boolean flinching;
 	private long flinchTimer;
 	private int score;
@@ -76,6 +78,8 @@ public class Player extends MapObject
 		this.facingRight = true;
 		
 		this.health = this.maxHealth = 3;
+		this.dead = false;
+		this.restartLevel = false;
 		
 		this.score = 0;
 		
@@ -95,7 +99,7 @@ public class Player extends MapObject
 							"/Sprites/Player/emoplayersprites.gif"));
 			
 			this.sprites = new ArrayList<BufferedImage[]>();
-			for(int i = 0; i < 6; i++)
+			for(int i = 0; i < 5; i++)
 			{
 				BufferedImage[] bi = new BufferedImage[this.numFrames[i]];
 				
@@ -134,14 +138,34 @@ public class Player extends MapObject
 		return this.health;
 	}
 	
+	public void setHealth(int health)
+	{
+		this.health = health;
+	}
+	
 	public boolean getDead()
 	{
 		return this.dead;
 	}
 	
+	public void setDead(boolean dead)
+	{
+		this.dead = true;
+	}
+	
+	public boolean getRestartLevel()
+	{
+		return this.restartLevel;
+	}
+	
 	public int getScore()
 	{
 		return this.score;
+	}
+	
+	public void setScore(int score)
+	{
+		this.score = score;
 	}
 	
 	public int getMaxHealth()
@@ -223,12 +247,16 @@ public class Player extends MapObject
 				e.setMaxSpeed(e.getMaxSpeed() - 0.4);
 			}
 			
-			if(this.currentAction == Player.FALLING)// crash enemy from above
+			// crash enemy from above
+			if(this.currentAction == Player.FALLING)
 			{
 				if(this.intersects(e))
 				{
-					this.score += e.getMaxHealth() * 10;
-					e.hit(100);
+					if(e.getJumpOnDamage() != 0)
+					{
+						this.score += e.getMaxHealth() * 10;
+						e.hit(e.getJumpOnDamage());
+					}
 				}
 			}
 			
@@ -344,6 +372,12 @@ public class Player extends MapObject
 	{
 		// update position
 		this.getNextPosition();
+		
+		if(this.gety() >= GamePanel.HEIGHT - (this.cheight * 2))
+		{
+			this.restartLevel = true;
+		}
+		
 		this.checkTileMapCollision();
 		
 		// add collectible item if collected
@@ -396,6 +430,7 @@ public class Player extends MapObject
 				this.firing = false;
 			}
 		}
+		
 		// razor blade attack
 		if(this.firing && this.currentAction != RAZORBLADE)
 		{
@@ -407,6 +442,7 @@ public class Player extends MapObject
 				this.blades.add(b);
 			}
 		}
+		
 		// update blades
 		for(int i = 0; i < this.blades.size(); i++)
 		{

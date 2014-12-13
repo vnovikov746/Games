@@ -406,6 +406,16 @@ public abstract class MapObject
 		this.ymap = this.tileMap.getY();
 	}
 	
+	public double getMapPositionX()
+	{
+		return this.xmap;
+	}
+	
+	public double getMapPositionY()
+	{
+		return this.ymap;
+	}
+	
 	public void setLeft(boolean b)
 	{
 		this.left = b;

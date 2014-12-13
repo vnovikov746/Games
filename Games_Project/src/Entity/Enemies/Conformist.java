@@ -27,8 +27,9 @@ public class Conformist extends Enemy
 		this.cwidth = 20;
 		this.cheight = 20;
 		
-		this.health = this.maxHealth = 2;
+		this.health = this.maxHealth = 1;
 		this.damage = 1;
+		this.jumpOnDamage = 2;
 		
 		// load sprites
 		try
@@ -90,6 +91,9 @@ public class Conformist extends Enemy
 	{
 		// update position
 		this.getNextPosition();
+		
+		super.update();
+		
 		this.checkTileMapCollision();
 		this.setPosition(this.xtemp, this.ytemp);
 		
