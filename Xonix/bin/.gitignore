@@ -1,1 +1,9 @@
+<<<<<<< HEAD
 /board_objects
+=======
+/board_objects/
+/gui/
+/logic/
+/main/
+/sprites/
+>>>>>>> origin/master
